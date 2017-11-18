@@ -2,3 +2,7 @@ filter_parser.go
 y.output
 
 vendor/*
+
+GPATH*
+GRTAGS*
+GTAGS*
