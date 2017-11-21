@@ -20,6 +20,14 @@ type StringExpr struct {
     literal string
 }
 
+type LabelExpr struct {
+    label string
+}
+
+type ProjectExpr struct {
+    project string
+}
+
 type BoolInfixOpExpr struct {
     left Expression
     operator rune
@@ -98,6 +106,14 @@ expr
     | STRING
     {
         $$ = StringExpr{literal: $1.literal}
+    }
+    | '@' STRING
+    {
+        $$ = LabelExpr{label: $2.literal}
+    }
+    | '#' STRING
+    {
+        $$ = ProjectExpr{project: $2.literal}
     }
     | '(' expr ')'
     {

@@ -17,6 +17,14 @@ func TestPriorityFilter(t *testing.T) {
 	assert.Equal(t, StringExpr{literal: "p1"}, Filter("p1"), "they should be equal")
 }
 
+func TestLabelFilter(t *testing.T) {
+	assert.Equal(t, LabelExpr{label: "label"}, Filter("@label"), "they should be equal")
+}
+
+func TestProjectFilter(t *testing.T) {
+	assert.Equal(t, ProjectExpr{project: "project"}, Filter("#project"), "they should be equal")
+}
+
 func TestBoolInfixFilter(t *testing.T) {
 	assert.Equal(t,
 		BoolInfixOpExpr{
