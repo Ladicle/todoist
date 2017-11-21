@@ -11,13 +11,13 @@ import (
 var priorityRegex = regexp.MustCompile("^p([1-4])$")
 
 // Eval ...
-func Eval(e Expression, item todoist.Item) (result bool, err error) {
+func Eval(e Expression, item todoist.Item, c *todoist.Client) (result bool, err error) {
 	result = false
 	switch e.(type) {
 	case BoolInfixOpExpr:
 		e := e.(BoolInfixOpExpr)
-		lr, err := Eval(e.left, item)
-		rr, err := Eval(e.right, item)
+		lr, err := Eval(e.left, item, c)
+		rr, err := Eval(e.right, item, c)
 		if err != nil {
 			return false, nil
 		}
@@ -33,9 +33,15 @@ func Eval(e Expression, item todoist.Item) (result bool, err error) {
 	case DueDateExpr:
 		e := e.(DueDateExpr)
 		return EvalDueDate(e, item), err
+	case LabelExpr:
+		e := e.(LabelExpr)
+		return EvalLabel(e, item, c), err
+	case ProjectExpr:
+		e := e.(ProjectExpr)
+		return EvalProject(e, item, c), err
 	case NotOpExpr:
 		e := e.(NotOpExpr)
-		r, err := Eval(e.expr, item)
+		r, err := Eval(e.expr, item, c)
 		if err != nil {
 			return false, nil
 		}
@@ -84,6 +90,26 @@ func EvalDueDate(e DueDateExpr, item todoist.Item) (result bool) {
 	default:
 		return false
 	}
+}
+
+func EvalLabel(e LabelExpr, item todoist.Item, c *todoist.Client) (result bool) {
+	for _, l := range c.Store.Labels {
+		for _, id := range item.LabelIDs {
+			if id == l.ID && e.label == l.Name {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func EvalProject(e ProjectExpr, item todoist.Item, c *todoist.Client) (result bool) {
+	for _, p := range c.Store.Projects {
+		if item.ProjectID == p.GetID() && e.project == p.Name {
+			return true
+		}
+	}
+	return false
 }
 
 func EvalAsPriority(e StringExpr, item todoist.Item) (result bool) {

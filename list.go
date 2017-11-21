@@ -19,7 +19,7 @@ func List(c *cli.Context) error {
 	itemList := [][]string{}
 	for _, itemOrder := range client.Store.ItemOrders {
 		item := itemOrder.Data.(todoist.Item)
-		r, err := Eval(ex, item)
+		r, err := Eval(ex, item, client)
 		if err != nil {
 			return err
 		}
